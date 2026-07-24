@@ -1,49 +1,54 @@
 """
-Service Discovery.
-
-Discovers network services exposed by the target.
+Service Discovery Module.
 """
 
-import argparse
+from argparse import ArgumentParser, Namespace
+
+from recon.adapters import NmapAdapter
 
 
 class ServiceDiscovery:
-    """Performs service discovery."""
+    """Service discovery component."""
 
     def __init__(self):
-        """Initialize service discovery."""
-        pass
+        """Initialize the service discovery component."""
+        self._adapter = NmapAdapter()
 
-    def execute(self, arguments: argparse.Namespace) -> dict:
+    def execute(self, arguments: Namespace) -> dict:
         """
         Execute service discovery.
 
         Parameters
         ----------
-        arguments : argparse.Namespace
+        arguments : Namespace
+            Parsed command-line arguments.
 
         Returns
         -------
         dict
             Service discovery results.
         """
-
-        results = {
-            "target": arguments.target,
-            "services": [],
-        }
-
-        return results
+        return self._adapter.execute(arguments.target)
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """Run the service discovery module."""
 
-    sample = argparse.Namespace(
-        target="example.com",
-        output="reports",
-        resume=False,
+    parser = ArgumentParser(description="Service Discovery Module")
+
+    parser.add_argument(
+        "target",
+        help="Target hostname or domain",
     )
+
+    arguments = parser.parse_args()
 
     discovery = ServiceDiscovery()
 
-    print(discovery.execute(sample))
+    results = discovery.execute(arguments)
+
+    print(results)
+
+
+if __name__ == "__main__":
+    main()

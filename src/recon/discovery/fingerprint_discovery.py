@@ -1,50 +1,54 @@
 """
-Fingerprint Discovery.
-
-Identifies technologies running on the target.
+Fingerprint Discovery Module.
 """
 
-import argparse
+from argparse import ArgumentParser, Namespace
+
+from recon.adapters import FingerprintAdapter
 
 
 class FingerprintDiscovery:
-    """Performs technology fingerprinting."""
+    """Fingerprint discovery component."""
 
     def __init__(self):
-        """Initialize fingerprint discovery."""
-        pass
+        """Initialize the fingerprint discovery component."""
+        self._adapter = FingerprintAdapter()
 
-    def execute(self, arguments: argparse.Namespace) -> dict:
+    def execute(self, arguments: Namespace) -> dict:
         """
         Execute technology fingerprinting.
 
         Parameters
         ----------
-        arguments : argparse.Namespace
+        arguments : Namespace
+            Parsed command-line arguments.
 
         Returns
         -------
         dict
             Fingerprinting results.
         """
-
-        results = {
-            "target": arguments.target,
-            "technologies": [],
-            "headers": {},
-        }
-
-        return results
+        return self._adapter.execute(arguments.target)
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """Run the fingerprint discovery module."""
 
-    sample = argparse.Namespace(
-        target="example.com",
-        output="reports",
-        resume=False,
+    parser = ArgumentParser(description="Fingerprint Discovery Module")
+
+    parser.add_argument(
+        "target",
+        help="Target hostname or domain",
     )
+
+    arguments = parser.parse_args()
 
     discovery = FingerprintDiscovery()
 
-    print(discovery.execute(sample))
+    results = discovery.execute(arguments)
+
+    print(results)
+
+
+if __name__ == "__main__":
+    main()

@@ -1,60 +1,82 @@
 """
-Reconnaissance Engine.
+Recon Engine.
 
-Coordinates the complete reconnaissance workflow.
+Coordinates the reconnaissance workflow.
 """
 
-import argparse
+from argparse import ArgumentParser, Namespace
 
 from recon.discovery import DiscoveryOrchestrator
 
 
 class ReconEngine:
-    """Coordinates reconnaissance execution."""
+    """
+    Coordinates the reconnaissance workflow.
+    """
 
     def __init__(self):
-        """Initialize the reconnaissance engine."""
-
+        """
+        Initialize the reconnaissance engine.
+        """
         self._discovery = DiscoveryOrchestrator()
 
-    def run(self, arguments: argparse.Namespace) -> dict:
+        #
+        # Future integrations
+        #
+        # self._evidence = EvidenceOrchestrator()
+        # self._reporting = ReportingOrchestrator()
+
+    def execute(self, arguments: Namespace) -> dict:
         """
         Execute the reconnaissance workflow.
 
         Parameters
         ----------
-        arguments : argparse.Namespace
-            Validated reconnaissance arguments.
+        arguments : Namespace
+            Parsed command-line arguments.
 
         Returns
         -------
         dict
-            Reconnaissance results.
+            Normalized reconnaissance results.
         """
 
-        # Phase 1
-        discovery_results = self._discovery.execute(arguments)
+        #
+        # Discovery phase
+        #
+        normalized_results = self._discovery.execute(arguments)
 
-        # Phase 2 (future)
-        # evidence = ...
+        #
+        # Future phases
+        #
+        # self._evidence.execute(normalized_results)
+        # self._reporting.execute(normalized_results)
 
-        # Phase 3 (future)
-        # report = ...
-
-        return discovery_results
+        return normalized_results
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """
+    Run the reconnaissance engine as a standalone program.
+    """
 
-    sample = argparse.Namespace(
-        target="example.com",
-        scope=None,
-        output="reports",
-        resume=False,
+    parser = ArgumentParser(
+        description="Reconnaissance Engine"
     )
+
+    parser.add_argument(
+        "target",
+        help="Target hostname or domain",
+    )
+
+    arguments = parser.parse_args()
 
     engine = ReconEngine()
 
-    results = engine.run(sample)
+    results = engine.execute(arguments)
 
     print(results)
+
+
+if __name__ == "__main__":
+    main()

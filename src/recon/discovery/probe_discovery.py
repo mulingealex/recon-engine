@@ -1,53 +1,41 @@
 """
-Probe Discovery.
-
-Determines whether the target is reachable and identifies
-available application protocols.
+Probe Discovery Module.
 """
 
-import argparse
+from argparse import ArgumentParser, Namespace
+
+from recon.adapters import CurlAdapter
 
 
 class ProbeDiscovery:
-    """Performs basic target probing."""
+    """Probe discovery component."""
 
     def __init__(self):
-        """Initialize probe discovery."""
-        pass
+        self._adapter = CurlAdapter()
 
-    def execute(self, arguments: argparse.Namespace) -> dict:
+    def execute(self, arguments: Namespace) -> dict:
         """
-        Execute probe discovery.
-
-        Parameters
-        ----------
-        arguments : argparse.Namespace
-
-        Returns
-        -------
-        dict
-            Probe discovery results.
+        Execute HTTP/HTTPS probing.
         """
-
-        results = {
-            "target": arguments.target,
-            "reachable": False,
-            "http": False,
-            "https": False,
-            "redirect": None,
-        }
-
-        return results
+        return self._adapter.execute(arguments.target)
 
 
-if __name__ == "__main__":
+def main() -> None:
+    parser = ArgumentParser(description="Probe Discovery Module")
 
-    sample = argparse.Namespace(
-        target="example.com",
-        output="reports",
-        resume=False,
+    parser.add_argument(
+        "target",
+        help="Target hostname or domain"
     )
+
+    arguments = parser.parse_args()
 
     discovery = ProbeDiscovery()
 
-    print(discovery.execute(sample))
+    results = discovery.execute(arguments)
+
+    print(results)
+
+
+if __name__ == "__main__":
+    main()

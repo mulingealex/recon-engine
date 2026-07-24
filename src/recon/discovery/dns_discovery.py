@@ -1,51 +1,63 @@
 """
-DNS Discovery.
+DNS Discovery Module.
 
-Performs DNS reconnaissance for the target.
+Performs DNS discovery by delegating DNS lookups
+to the DigAdapter.
 """
 
-import argparse
+from argparse import ArgumentParser, Namespace
+
+from recon.adapters import DigAdapter
 
 
 class DNSDiscovery:
-    """Performs DNS discovery."""
+    """
+    DNS discovery component.
+    """
 
     def __init__(self):
-        """Initialize DNS discovery."""
-        pass
+        """
+        Initialize the DNS discovery component.
+        """
+        self._adapter = DigAdapter()
 
-    def execute(self, arguments: argparse.Namespace) -> dict:
+    def execute(self, arguments: Namespace) -> dict:
         """
         Execute DNS discovery.
 
         Parameters
         ----------
-        arguments : argparse.Namespace
+        arguments : Namespace
+            Parsed command-line arguments.
 
         Returns
         -------
         dict
             DNS discovery results.
         """
-
-        results = {
-            "hostname": arguments.target,
-            "addresses": [],
-            "records": {},
-            "wildcard": False,
-        }
-
-        return results
+        return self._adapter.execute(arguments.target)
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """
+    Run the DNS discovery module as a standalone program.
+    """
 
-    sample = argparse.Namespace(
-        target="example.com",
-        output="reports",
-        resume=False,
+    parser = ArgumentParser(description="DNS Discovery Module")
+
+    parser.add_argument(
+        "target",
+        help="Target hostname or domain"
     )
+
+    arguments = parser.parse_args()
 
     discovery = DNSDiscovery()
 
-    print(discovery.execute(sample))
+    results = discovery.execute(arguments)
+
+    print(results)
+
+
+if __name__ == "__main__":
+    main()

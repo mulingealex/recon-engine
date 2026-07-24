@@ -1,10 +1,11 @@
 """
 Discovery Orchestrator.
 
-Coordinates the execution of all discovery modules.
+Coordinates all discovery modules and returns normalized
+discovery results.
 """
 
-import argparse
+from argparse import Namespace
 
 from recon.discovery.dns_discovery import DNSDiscovery
 from recon.discovery.probe_discovery import ProbeDiscovery
@@ -16,26 +17,29 @@ from recon.discovery.normalizer import Normalizer
 
 
 class DiscoveryOrchestrator:
-    """Coordinates the discovery workflow."""
+    """
+    Coordinates execution of all discovery modules.
+    """
 
     def __init__(self):
-        """Initialize discovery modules."""
+        """Initialize the discovery orchestrator."""
 
         self._dns = DNSDiscovery()
         self._probe = ProbeDiscovery()
         self._service = ServiceDiscovery()
         self._tls = TLSDiscovery()
-        self._virtual_host = VirtualHostDiscovery()
+        self._vhost = VirtualHostDiscovery()
         self._fingerprint = FingerprintDiscovery()
         self._normalizer = Normalizer()
 
-    def execute(self, arguments: argparse.Namespace) -> dict:
+    def execute(self, arguments: Namespace) -> dict:
         """
-        Execute the complete discovery workflow.
+        Execute all discovery modules.
 
         Parameters
         ----------
-        arguments : argparse.Namespace
+        arguments : Namespace
+            Parsed command-line arguments.
 
         Returns
         -------
@@ -43,42 +47,46 @@ class DiscoveryOrchestrator:
             Normalized discovery results.
         """
 
-        results = {}
+        discovery_results = {
+            "dns": self._dns.execute(arguments),
+            "probe": self._probe.execute(arguments),
+            "services": self._service.execute(arguments),
+            "tls": self._tls.execute(arguments),
+            "virtual_hosts": self._vhost.execute(arguments),
+            "fingerprint": self._fingerprint.execute(arguments),
+        }
 
-        # DNS Discovery
-        results["dns"] = self._dns.execute(arguments)
-
-        # Target Probing
-        results["probe"] = self._probe.execute(arguments)
-
-        # Service Discovery
-        results["services"] = self._service.execute(arguments)
-
-        # TLS Discovery
-        results["tls"] = self._tls.execute(arguments)
-
-        # Virtual Host Discovery
-        results["virtual_hosts"] = self._virtual_host.execute(arguments)
-
-        # Technology Fingerprinting
-        results["fingerprint"] = self._fingerprint.execute(arguments)
-
-        # Normalize discovery results
-        normalized_results = self._normalizer.execute(results)
+        normalized_results = self._normalizer.execute(
+            discovery_results
+        )
 
         return normalized_results
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """
+    Run the discovery orchestrator as a standalone program.
+    """
 
-    sample = argparse.Namespace(
-        target="example.com",
-        output="reports",
-        resume=False,
+    from argparse import ArgumentParser
+
+    parser = ArgumentParser(
+        description="Discovery Orchestrator"
     )
+
+    parser.add_argument(
+        "target",
+        help="Target hostname or domain",
+    )
+
+    arguments = parser.parse_args()
 
     orchestrator = DiscoveryOrchestrator()
 
-    discovery_results = orchestrator.execute(sample)
+    results = orchestrator.execute(arguments)
 
-    print(discovery_results)
+    print(results)
+
+
+if __name__ == "__main__":
+    main()

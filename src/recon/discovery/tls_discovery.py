@@ -1,51 +1,54 @@
 """
-TLS Discovery.
-
-Discovers TLS configuration and certificate information.
+TLS Discovery Module.
 """
 
-import argparse
+from argparse import ArgumentParser, Namespace
+
+from recon.adapters import OpenSSLAdapter
 
 
 class TLSDiscovery:
-    """Performs TLS discovery."""
+    """TLS discovery component."""
 
     def __init__(self):
-        """Initialize TLS discovery."""
-        pass
+        """Initialize the TLS discovery component."""
+        self._adapter = OpenSSLAdapter()
 
-    def execute(self, arguments: argparse.Namespace) -> dict:
+    def execute(self, arguments: Namespace) -> dict:
         """
         Execute TLS discovery.
 
         Parameters
         ----------
-        arguments : argparse.Namespace
+        arguments : Namespace
+            Parsed command-line arguments.
 
         Returns
         -------
         dict
             TLS discovery results.
         """
-
-        results = {
-            "target": arguments.target,
-            "tls_enabled": False,
-            "protocols": [],
-            "certificate": {},
-        }
-
-        return results
+        return self._adapter.execute(arguments.target)
 
 
-if __name__ == "__main__":
+def main() -> None:
+    """Run the TLS discovery module."""
 
-    sample = argparse.Namespace(
-        target="example.com",
-        output="reports",
-        resume=False,
+    parser = ArgumentParser(description="TLS Discovery Module")
+
+    parser.add_argument(
+        "target",
+        help="Target hostname or domain",
     )
+
+    arguments = parser.parse_args()
 
     discovery = TLSDiscovery()
 
-    print(discovery.execute(sample))
+    results = discovery.execute(arguments)
+
+    print(results)
+
+
+if __name__ == "__main__":
+    main()
