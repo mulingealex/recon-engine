@@ -97,6 +97,8 @@ class ManifestWriter:
 
             "integrity-attestation.md",
 
+            "foothold-evidence.txt",
+
         ]
 
         with manifest_file.open(

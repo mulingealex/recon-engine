@@ -13,6 +13,9 @@ from recon.evidence.assessment_manifest_writer import (
 )
 from recon.evidence.continuity_writer import ContinuityWriter
 from recon.evidence.integrity_writer import IntegrityWriter
+from recon.evidence.foothold_evidence_writer import (
+    FootholdEvidenceWriter,
+)
 from recon.evidence.manifest_writer import ManifestWriter
 
 
@@ -51,6 +54,15 @@ class EvidenceOrchestrator:
         self._integrity_writer = (
             IntegrityWriter()
         )
+
+        self._foothold_evidence_writer = (
+            FootholdEvidenceWriter()
+        )
+
+        #
+        # Must execute last because it hashes
+        # previously generated artifacts.
+        #
 
         self._manifest_writer = (
             ManifestWriter()
@@ -118,6 +130,12 @@ class EvidenceOrchestrator:
             )
         )
 
+        evidence["foothold_evidence"] = (
+            self._foothold_evidence_writer.write(
+                normalized_data
+            )
+        )
+
         #
         # Must execute last because it hashes
         # previously generated artifacts.
@@ -162,6 +180,23 @@ def main() -> None:
             "technologies": [
                 "cloudflare",
             ]
+        },
+        "authenticated_http": {
+            "success": True,
+            "status_code": 200,
+            "resource": "/user.txt",
+            "body": "EXAMPLE-FLAG",
+            "virtual_host": "example.local",
+            "headers": {
+                "Server": "Example",
+                "Content-Type": "text/plain",
+                "Content-Length": "12",
+                "X-Runtime-Profile": "P5",
+            },
+            "response": {
+                "target": "127.0.0.1",
+                "method": "GET",
+            },
         },
     }
 

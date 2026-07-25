@@ -6,7 +6,7 @@ Writes the request ledger for reconnaissance activity.
 
 from pathlib import Path
 import csv
-from datetime import datetime
+from datetime import UTC, datetime
 
 
 class RequestLedgerWriter:
@@ -37,9 +37,9 @@ class RequestLedgerWriter:
         """
 
         return (
-            datetime.utcnow()
+            datetime.now(UTC)
             .isoformat(timespec="seconds")
-            + "Z"
+            .replace("+00:00", "Z")
         )
 
     def write(
