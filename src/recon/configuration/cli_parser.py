@@ -1,64 +1,147 @@
 """
-Command-line interface parser.
-
-Responsible for parsing user-supplied command-line arguments.
-
-This module does not validate arguments or perform any
-reconnaissance. It only converts command-line input into a
-structured representation for the Configuration component.
+Command-line argument parser.
 """
 
-import argparse
+from argparse import (
+    ArgumentDefaultsHelpFormatter,
+    ArgumentParser,
+    Namespace,
+)
 
 
 class CLIParser:
-    """Parses command-line arguments."""
+    """
+    Parses command-line arguments.
+    """
 
     def __init__(self):
-        """Initialize the argument parser."""
+        """
+        Initialize the CLI parser.
+        """
 
-        self.parser = argparse.ArgumentParser(
-            prog="recon-engine",
-            description="A resumable, scope-safe reconnaissance engine."
+        self._parser = ArgumentParser(
+            prog="recon",
+            description=(
+                "Reconnaissance Engine"
+            ),
+            formatter_class=(
+                ArgumentDefaultsHelpFormatter
+            ),
         )
 
-        # Assessment target
-        self.parser.add_argument(
-            "--target",
-            help="Target hostname or IP address."
+        #
+        # Target
+        #
+
+        self._parser.add_argument(
+            "target",
+            nargs="?",
+            default=None,
+            help=(
+                "Target hostname, "
+                "host:port, or URL."
+            ),
         )
 
-        # Scope definition
-        self.parser.add_argument(
+        #
+        # Runtime assignment
+        #
+
+        self._parser.add_argument(
+            "--assignment",
+            metavar="FILE",
+            default=None,
+            help=(
+                "Runtime assignment JSON "
+                "(Stage 5 local lab)."
+            ),
+        )
+
+        #
+        # Scope
+        #
+
+        self._parser.add_argument(
             "--scope",
-            help="Path to the scope definition file."
+            metavar="FILE",
+            default=None,
+            help=(
+                "Scope definition."
+            ),
         )
 
-        # Output directory
-        self.parser.add_argument(
+        #
+        # Output
+        #
+
+        self._parser.add_argument(
             "--output",
-            help="Directory for generated artifacts."
+            default="output",
+            help=(
+                "Output directory."
+            ),
         )
 
-        # Configuration file
-        self.parser.add_argument(
+        #
+        # Configuration
+        #
+
+        self._parser.add_argument(
             "--config",
-            help="Path to the configuration file."
+            metavar="FILE",
+            default=None,
+            help=(
+                "YAML configuration file."
+            ),
         )
 
-        # Resume an interrupted assessment
-        self.parser.add_argument(
+        #
+        # Resume
+        #
+
+        self._parser.add_argument(
             "--resume",
             action="store_true",
-            help="Resume a previous assessment."
+            help=(
+                "Resume a previous assessment."
+            ),
         )
 
-    def parse(self):
-        """Parse and return command-line arguments."""
-        return self.parser.parse_args()
+    def parse(self) -> Namespace:
+        """
+        Parse command-line arguments.
+
+        Returns
+        -------
+        Namespace
+            Parsed arguments.
+        """
+
+        arguments = (
+            self._parser.parse_args()
+        )
+
+        #
+        # Require either a target
+        # or an assignment.
+        #
+
+        if (
+            arguments.target is None
+            and arguments.assignment is None
+        ):
+            self._parser.error(
+                "Either a target or "
+                "--assignment must be supplied."
+            )
+
+        return arguments
 
 
 if __name__ == "__main__":
+
     parser = CLIParser()
-    arguments = parser.parse()
-    print(arguments)
+
+    print(
+        parser.parse()
+    )

@@ -9,6 +9,10 @@ from argparse import (
     Namespace,
 )
 
+from recon.configuration import (
+    ConfigLoader,
+)
+
 from recon.discovery import (
     DiscoveryOrchestrator,
 )
@@ -127,10 +131,30 @@ def main() -> None:
 
     parser.add_argument(
         "target",
-        help="Target hostname or domain",
+        help="Target hostname, host:port or URL",
     )
 
     arguments = parser.parse_args()
+
+    #
+    # Load configuration.
+    #
+
+    loader = ConfigLoader()
+
+    arguments = loader.load(
+        arguments
+    )
+
+    #
+    # DEBUG
+    #
+
+    print(arguments)
+
+    #
+    # Execute engine.
+    #
 
     engine = ReconEngine()
 
@@ -149,7 +173,9 @@ def main() -> None:
     for artifact, path in (
         results["artifacts"].items()
     ):
-        print(f"  ✓ {artifact}: {path}")
+        print(
+            f"  ✓ {artifact}: {path}"
+        )
 
     print()
 

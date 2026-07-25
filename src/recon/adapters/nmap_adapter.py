@@ -16,13 +16,21 @@ class NmapAdapter:
         """Initialize the Nmap adapter."""
         pass
 
-    def execute(self, target: str) -> dict:
+    def execute(
+        self,
+        host: str,
+        port: int | None = None,
+    ) -> dict:
         """
         Execute an Nmap scan.
 
         Parameters
         ----------
-        target : str
+        host : str
+            Target hostname or IP address.
+
+        port : int | None
+            Optional port to scan.
 
         Returns
         -------
@@ -35,8 +43,22 @@ class NmapAdapter:
             "-oX",
             "-",
             "-sV",
-            target,
         ]
+
+        #
+        # Scan the supplied port if available.
+        #
+
+        if port is not None:
+
+            command.extend(
+                [
+                    "-p",
+                    str(port),
+                ]
+            )
+
+        command.append(host)
 
         try:
 
@@ -48,17 +70,13 @@ class NmapAdapter:
                 timeout=300,
             )
 
-        except subprocess.TimeoutExpired:
+        except (
+            subprocess.TimeoutExpired,
+            FileNotFoundError,
+        ):
 
             return {
-                "target": target,
-                "services": [],
-            }
-
-        except FileNotFoundError:
-
-            return {
-                "target": target,
+                "target": host,
                 "services": [],
             }
 
@@ -75,25 +93,35 @@ class NmapAdapter:
             except ET.ParseError:
 
                 return {
-                    "target": target,
+                    "target": host,
                     "services": [],
                 }
 
-            for host in root.findall("host"):
+            for host_element in root.findall(
+                "host"
+            ):
 
-                ports = host.find("ports")
+                ports = host_element.find(
+                    "ports"
+                )
 
                 if ports is None:
                     continue
 
-                for port in ports.findall("port"):
+                for port_element in ports.findall(
+                    "port"
+                ):
 
-                    state = port.find("state")
-                    service = port.find("service")
+                    state = port_element.find(
+                        "state"
+                    )
+
+                    service = port_element.find(
+                        "service"
+                    )
 
                     if (
                         state is None
-                        or service is None
                         or state.get("state") != "open"
                     ):
                         continue
@@ -101,26 +129,42 @@ class NmapAdapter:
                     services.append(
                         {
                             "port": int(
-                                port.get("portid")
+                                port_element.get(
+                                    "portid"
+                                )
                             ),
-                            "protocol": port.get(
+                            "protocol": port_element.get(
                                 "protocol"
                             ),
                             "state": state.get(
                                 "state"
                             ),
-                            "service": service.get(
-                                "name"
+                            "service": (
+                                service.get("name")
+                                if service is not None
+                                else "unknown"
                             ),
-                            "version": service.get(
-                                "version",
-                                "",
+                            "product": (
+                                service.get(
+                                    "product",
+                                    "",
+                                )
+                                if service is not None
+                                else ""
+                            ),
+                            "version": (
+                                service.get(
+                                    "version",
+                                    "",
+                                )
+                                if service is not None
+                                else ""
                             ),
                         }
                     )
 
         return {
-            "target": target,
+            "target": host,
             "services": services,
         }
 
@@ -131,6 +175,7 @@ if __name__ == "__main__":
 
     print(
         adapter.execute(
-            "scanme.nmap.org"
+            "127.0.0.1",
+            18408,
         )
     )

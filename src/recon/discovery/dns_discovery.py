@@ -5,7 +5,10 @@ Performs DNS discovery by delegating DNS lookups
 to the DigAdapter.
 """
 
-from argparse import ArgumentParser, Namespace
+from argparse import (
+    ArgumentParser,
+    Namespace,
+)
 
 from recon.adapters import DigAdapter
 
@@ -19,9 +22,13 @@ class DNSDiscovery:
         """
         Initialize the DNS discovery component.
         """
+
         self._adapter = DigAdapter()
 
-    def execute(self, arguments: Namespace) -> dict:
+    def execute(
+        self,
+        arguments: Namespace,
+    ) -> dict:
         """
         Execute DNS discovery.
 
@@ -35,26 +42,47 @@ class DNSDiscovery:
         dict
             DNS discovery results.
         """
-        return self._adapter.execute(arguments.target)
+
+        #
+        # DNS operates on hostnames,
+        # never URLs.
+        #
+
+        target = getattr(
+            arguments,
+            "host",
+            None,
+        )
+
+        if target is None:
+            target = arguments.target
+
+        return self._adapter.execute(
+            target
+        )
 
 
 def main() -> None:
     """
-    Run the DNS discovery module as a standalone program.
+    Run the DNS discovery module.
     """
 
-    parser = ArgumentParser(description="DNS Discovery Module")
+    parser = ArgumentParser(
+        description="DNS Discovery Module"
+    )
 
     parser.add_argument(
         "target",
-        help="Target hostname or domain"
+        help="Target hostname or domain",
     )
 
     arguments = parser.parse_args()
 
     discovery = DNSDiscovery()
 
-    results = discovery.execute(arguments)
+    results = discovery.execute(
+        arguments
+    )
 
     print(results)
 

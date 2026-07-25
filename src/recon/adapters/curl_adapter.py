@@ -29,13 +29,32 @@ class CurlAdapter:
             HTTP probing results.
         """
 
+        #
+        # Accept:
+        #
+        # example.com
+        # 127.0.0.1
+        # 127.0.0.1:18408
+        # http://127.0.0.1:18408/
+        # https://example.com
+        #
+
+        if (
+            target.startswith("http://")
+            or target.startswith("https://")
+        ):
+            url = target
+
+        else:
+            url = f"http://{target}"
+
         command = [
             "curl",
             "-I",
             "-L",
             "--max-time",
             "10",
-            f"http://{target}",
+            url,
         ]
 
         completed_process = subprocess.run(
@@ -45,24 +64,68 @@ class CurlAdapter:
             check=False,
         )
 
-        reachable = completed_process.returncode == 0
+        reachable = (
+            completed_process.returncode == 0
+        )
 
         headers = {}
 
+        status_code = None
+
+        protocol = None
+
         for line in completed_process.stdout.splitlines():
+
+            #
+            # HTTP status line
+            #
+
+            if line.startswith("HTTP/"):
+
+                parts = line.split()
+
+                if len(parts) >= 2:
+
+                    protocol = parts[0]
+
+                    try:
+                        status_code = int(parts[1])
+
+                    except ValueError:
+                        status_code = None
+
+                continue
+
+            #
+            # HTTP headers
+            #
 
             if ":" in line:
 
-                key, value = line.split(":", 1)
+                key, value = line.split(
+                    ":",
+                    1,
+                )
 
-                headers[key.strip()] = value.strip()
+                headers[
+                    key.strip()
+                ] = value.strip()
+
+        redirect = headers.get(
+            "Location"
+        )
 
         return {
             "target": target,
+            "url": url,
             "reachable": reachable,
             "http": reachable,
-            "https": False,
-            "redirect": None,
+            "https": url.startswith(
+                "https://"
+            ),
+            "redirect": redirect,
+            "status_code": status_code,
+            "protocol": protocol,
             "headers": headers,
         }
 
@@ -71,4 +134,20 @@ if __name__ == "__main__":
 
     adapter = CurlAdapter()
 
-    print(adapter.execute("example.com"))
+    print(
+        adapter.execute(
+            "example.com"
+        )
+    )
+
+    print(
+        adapter.execute(
+            "127.0.0.1:18408"
+        )
+    )
+
+    print(
+        adapter.execute(
+            "http://127.0.0.1:18408/"
+        )
+    )

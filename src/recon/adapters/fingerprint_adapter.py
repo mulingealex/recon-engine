@@ -1,9 +1,11 @@
 """
 Fingerprint Adapter.
 
-Performs lightweight technology fingerprinting using
-HTTP response headers.
+Performs lightweight HTTP technology fingerprinting using
+response headers and optional virtual host routing.
 """
+
+from __future__ import annotations
 
 import subprocess
 
@@ -12,16 +14,24 @@ class FingerprintAdapter:
     """Adapter for HTTP technology fingerprinting."""
 
     def __init__(self):
-        """Initialize the fingerprint adapter."""
+        """Initialize the adapter."""
         pass
 
-    def execute(self, target: str) -> dict:
+    def execute(
+        self,
+        target: str,
+        virtual_host: str | None = None,
+    ) -> dict:
         """
         Execute HTTP fingerprinting.
 
         Parameters
         ----------
         target : str
+            Target hostname or IP.
+
+        virtual_host : str, optional
+            Host header to send.
 
         Returns
         -------
@@ -35,8 +45,22 @@ class FingerprintAdapter:
             "-L",
             "--max-time",
             "10",
-            f"http://{target}",
         ]
+
+        #
+        # Use Host header if supplied.
+        #
+
+        if virtual_host:
+
+            command.extend(
+                [
+                    "-H",
+                    f"Host: {virtual_host}",
+                ]
+            )
+
+        command.append(f"http://{target}")
 
         completed_process = subprocess.run(
             command,
@@ -46,6 +70,7 @@ class FingerprintAdapter:
         )
 
         headers = {}
+
         technologies = []
 
         for line in completed_process.stdout.splitlines():
@@ -53,19 +78,28 @@ class FingerprintAdapter:
             if ":" not in line:
                 continue
 
-            key, value = line.split(":", 1)
+            key, value = line.split(
+                ":",
+                1,
+            )
 
             key = key.strip()
+
             value = value.strip()
 
             headers[key] = value
 
         #
-        # Basic fingerprinting rules
+        # Basic technology detection.
         #
 
-        server = headers.get("Server", "")
-        powered_by = headers.get("X-Powered-By", "")
+        server = headers.get("Server")
+
+        powered_by = headers.get("X-Powered-By")
+
+        runtime = headers.get(
+            "X-Runtime-Profile"
+        )
 
         if server:
             technologies.append(server)
@@ -73,9 +107,17 @@ class FingerprintAdapter:
         if powered_by:
             technologies.append(powered_by)
 
+        if runtime:
+            technologies.append(
+                f"Runtime:{runtime}"
+            )
+
         return {
             "target": target,
-            "technologies": technologies,
+            "virtual_host": virtual_host,
+            "technologies": sorted(
+                set(technologies)
+            ),
             "headers": headers,
         }
 
@@ -84,4 +126,8 @@ if __name__ == "__main__":
 
     adapter = FingerprintAdapter()
 
-    print(adapter.execute("example.com"))
+    print(
+        adapter.execute(
+            "127.0.0.1:18408",
+        )
+    )

@@ -2,7 +2,10 @@
 Service Discovery Module.
 """
 
-from argparse import ArgumentParser, Namespace
+from argparse import (
+    ArgumentParser,
+    Namespace,
+)
 
 from recon.adapters import NmapAdapter
 
@@ -14,27 +17,48 @@ class ServiceDiscovery:
         """Initialize the service discovery component."""
         self._adapter = NmapAdapter()
 
-    def execute(self, arguments: Namespace) -> dict:
+    def execute(
+        self,
+        arguments: Namespace,
+    ) -> dict:
         """
         Execute service discovery.
 
         Parameters
         ----------
         arguments : Namespace
-            Parsed command-line arguments.
 
         Returns
         -------
         dict
-            Service discovery results.
         """
-        return self._adapter.execute(arguments.target)
+
+        host = getattr(
+            arguments,
+            "host",
+            None,
+        )
+
+        if host is None:
+            host = arguments.target
+
+        port = getattr(
+            arguments,
+            "port",
+            None,
+        )
+
+        return self._adapter.execute(
+            host,
+            port,
+        )
 
 
 def main() -> None:
-    """Run the service discovery module."""
 
-    parser = ArgumentParser(description="Service Discovery Module")
+    parser = ArgumentParser(
+        description="Service Discovery Module"
+    )
 
     parser.add_argument(
         "target",
@@ -45,9 +69,11 @@ def main() -> None:
 
     discovery = ServiceDiscovery()
 
-    results = discovery.execute(arguments)
-
-    print(results)
+    print(
+        discovery.execute(
+            arguments
+        )
+    )
 
 
 if __name__ == "__main__":
