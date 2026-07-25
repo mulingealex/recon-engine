@@ -38,18 +38,46 @@ class NmapAdapter:
             target,
         ]
 
-        completed_process = subprocess.run(
-            command,
-            capture_output=True,
-            text=True,
-            check=False,
-        )
+        try:
+
+            completed_process = subprocess.run(
+                command,
+                capture_output=True,
+                text=True,
+                check=False,
+                timeout=300,
+            )
+
+        except subprocess.TimeoutExpired:
+
+            return {
+                "target": target,
+                "services": [],
+            }
+
+        except FileNotFoundError:
+
+            return {
+                "target": target,
+                "services": [],
+            }
 
         services = []
 
         if completed_process.returncode == 0:
 
-            root = ET.fromstring(completed_process.stdout)
+            try:
+
+                root = ET.fromstring(
+                    completed_process.stdout
+                )
+
+            except ET.ParseError:
+
+                return {
+                    "target": target,
+                    "services": [],
+                }
 
             for host in root.findall("host"):
 
@@ -72,11 +100,22 @@ class NmapAdapter:
 
                     services.append(
                         {
-                            "port": int(port.get("portid")),
-                            "protocol": port.get("protocol"),
-                            "state": state.get("state"),
-                            "service": service.get("name"),
-                            "version": service.get("version", ""),
+                            "port": int(
+                                port.get("portid")
+                            ),
+                            "protocol": port.get(
+                                "protocol"
+                            ),
+                            "state": state.get(
+                                "state"
+                            ),
+                            "service": service.get(
+                                "name"
+                            ),
+                            "version": service.get(
+                                "version",
+                                "",
+                            ),
                         }
                     )
 
@@ -90,4 +129,8 @@ if __name__ == "__main__":
 
     adapter = NmapAdapter()
 
-    print(adapter.execute("scanme.nmap.org"))
+    print(
+        adapter.execute(
+            "scanme.nmap.org"
+        )
+    )

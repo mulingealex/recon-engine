@@ -1,67 +1,128 @@
 """
 Recon Engine.
 
-Coordinates the reconnaissance workflow.
+Coordinates the complete reconnaissance workflow.
 """
 
-from argparse import ArgumentParser, Namespace
+from argparse import (
+    ArgumentParser,
+    Namespace,
+)
 
-from recon.discovery import DiscoveryOrchestrator
+from recon.discovery import (
+    DiscoveryOrchestrator,
+)
+
+from recon.evidence import (
+    EvidenceOrchestrator,
+)
+
+from recon.reporting import (
+    ReportingOrchestrator,
+)
 
 
 class ReconEngine:
     """
-    Coordinates the reconnaissance workflow.
+    Coordinates the complete reconnaissance workflow.
     """
 
     def __init__(self):
         """
         Initialize the reconnaissance engine.
         """
-        self._discovery = DiscoveryOrchestrator()
 
-        #
-        # Future integrations
-        #
-        # self._evidence = EvidenceOrchestrator()
-        # self._reporting = ReportingOrchestrator()
+        self._discovery_orchestrator = (
+            DiscoveryOrchestrator()
+        )
 
-    def execute(self, arguments: Namespace) -> dict:
+        self._evidence_orchestrator = (
+            EvidenceOrchestrator()
+        )
+
+        self._reporting_orchestrator = (
+            ReportingOrchestrator()
+        )
+
+    def execute(
+        self,
+        arguments: Namespace,
+    ) -> dict:
         """
-        Execute the reconnaissance workflow.
-
-        Parameters
-        ----------
-        arguments : Namespace
-            Parsed command-line arguments.
-
-        Returns
-        -------
-        dict
-            Normalized reconnaissance results.
+        Execute the complete reconnaissance workflow.
         """
 
-        #
-        # Discovery phase
-        #
-        normalized_results = self._discovery.execute(arguments)
+        print("\n========================================")
+        print("Recon Engine")
+        print("========================================")
+        print(f"Target: {arguments.target}\n")
 
         #
-        # Future phases
+        # Discovery
         #
-        # self._evidence.execute(normalized_results)
-        # self._reporting.execute(normalized_results)
 
-        return normalized_results
+        print("[1/3] Running discovery...")
+
+        normalized_data = (
+            self._discovery_orchestrator.execute(
+                arguments
+            )
+        )
+
+        print("✓ Discovery completed.\n")
+
+        #
+        # Evidence
+        #
+
+        print("[2/3] Generating evidence...")
+
+        evidence = (
+            self._evidence_orchestrator.execute(
+                normalized_data
+            )
+        )
+
+        print("✓ Evidence generated.\n")
+
+        #
+        # Reporting
+        #
+
+        print("[3/3] Generating report...")
+
+        report = (
+            self._reporting_orchestrator.execute(
+                normalized_data
+            )
+        )
+
+        print("✓ Report generated.\n")
+
+        return {
+            "success": True,
+            "target": arguments.target,
+            "artifacts": {
+                "normalized": evidence["normalized"]["path"],
+                "scope_register": evidence["scope_register"]["path"],
+                "request_ledger": evidence["request_ledger"]["path"],
+                "evidence_index": evidence["evidence_index"]["path"],
+                "assessment_manifest": evidence["assessment_manifest"]["path"],
+                "continuity_record": evidence["continuity_record"]["path"],
+                "integrity_attestation": evidence["integrity_attestation"]["path"],
+                "manifest": evidence["manifest"]["path"],
+                "report": report["path"],
+            },
+        }
 
 
 def main() -> None:
     """
-    Run the reconnaissance engine as a standalone program.
+    Execute the reconnaissance engine.
     """
 
     parser = ArgumentParser(
-        description="Reconnaissance Engine"
+        description="Recon Engine"
     )
 
     parser.add_argument(
@@ -73,9 +134,24 @@ def main() -> None:
 
     engine = ReconEngine()
 
-    results = engine.execute(arguments)
+    results = engine.execute(
+        arguments
+    )
 
-    print(results)
+    print("========================================")
+    print("Assessment completed successfully.")
+    print("========================================\n")
+
+    print(f"Target: {results['target']}\n")
+
+    print("Artifacts:")
+
+    for artifact, path in (
+        results["artifacts"].items()
+    ):
+        print(f"  ✓ {artifact}: {path}")
+
+    print()
 
 
 if __name__ == "__main__":
