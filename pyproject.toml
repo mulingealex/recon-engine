@@ -1,15 +1,18 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "recon-engine"
-version = "0.1.0"
+version = "1.0.0"
 description = "Deterministic, scope-aware reconnaissance engine with evidence integrity for authorized assessments."
 readme = "README.md"
 requires-python = ">=3.13"
 license = { text = "MIT" }
 authors = [
+  { name = "Alex M. Mulinge", email = "mulingealex68@gmail.com" },
+]
+maintainers = [
   { name = "Alex M. Mulinge", email = "mulingealex68@gmail.com" },
 ]
 keywords = [
@@ -19,27 +22,33 @@ keywords = [
   "ethical-hacking",
   "evidence",
   "attack-surface",
+  "kali-linux",
 ]
 classifiers = [
-  "Development Status :: 4 - Beta",
+  "Development Status :: 5 - Production/Stable",
   "Environment :: Console",
+  "Intended Audience :: Developers",
   "Intended Audience :: Information Technology",
+  "Intended Audience :: System Administrators",
   "License :: OSI Approved :: MIT License",
   "Operating System :: POSIX :: Linux",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3 :: Only",
   "Topic :: Security",
+  "Typing :: Typed",
 ]
 dependencies = [
   "PyYAML>=6.0",
 ]
 
 [project.urls]
-Homepage = "https://github.com/mulingealex/recon-engine-portfolio"
-Documentation = "https://github.com/mulingealex/recon-engine-portfolio/tree/master/docs"
-Repository = "https://github.com/mulingealex/recon-engine-portfolio"
-Issues = "https://github.com/mulingealex/recon-engine-portfolio/issues"
-Changelog = "https://github.com/mulingealex/recon-engine-portfolio/blob/master/CHANGELOG.md"
+Homepage = "https://github.com/mulingealex/recon-engine"
+Documentation = "https://github.com/mulingealex/recon-engine/tree/master/docs"
+Repository = "https://github.com/mulingealex/recon-engine"
+Issues = "https://github.com/mulingealex/recon-engine/issues"
+Changelog = "https://github.com/mulingealex/recon-engine/blob/master/CHANGELOG.md"
+"Release Notes" = "https://github.com/mulingealex/recon-engine/blob/master/RELEASE_NOTES_v1.0.0.md"
 
 [project.optional-dependencies]
 dev = [

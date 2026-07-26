@@ -1,12 +1,13 @@
 # Recon Engine
 
+[![CI](https://github.com/mulingealex/recon-engine/actions/workflows/ci.yml/badge.svg)](https://github.com/mulingealex/recon-engine/actions/workflows/ci.yml)
 [![Python 3.13+](https://img.shields.io/badge/python-3.13+-3776AB?logo=python&logoColor=white)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](CHANGELOG.md)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Ruff](https://img.shields.io/badge/lint-ruff-D7FF64?logo=ruff)](https://docs.astral.sh/ruff/)
 [![pytest](https://img.shields.io/badge/tests-pytest-0A9EDC?logo=pytest&logoColor=white)](https://docs.pytest.org/)
 [![Platform](https://img.shields.io/badge/platform-Kali%20Linux-268BEE?logo=kalilinux&logoColor=white)](https://www.kali.org/)
-[![Status](https://img.shields.io/badge/status-portfolio%20ready-success)](#project-status)
 
 **Deterministic, scope-aware reconnaissance with evidence integrity for authorized assessments.**
 
@@ -14,25 +15,27 @@ Recon Engine is a modular Python reconnaissance platform that automates authoriz
 
 > **Authorized use only.** This project is designed for lab environments, educational assessments, and engagements where written authorization exists. Do not use it against systems you do not own or lack permission to test.
 
+**For recruiters:** see [PROJECT_OVERVIEW.md](PROJECT_OVERVIEW.md) · **Architecture:** [ARCHITECTURE.md](ARCHITECTURE.md) · **Release notes:** [RELEASE_NOTES_v1.0.0.md](RELEASE_NOTES_v1.0.0.md)
+
 ---
 
-## Professional Overview
+## Overview
 
 Built as a production-style cybersecurity engineering project, Recon Engine emphasizes:
 
 | Principle | Implementation |
 |-----------|----------------|
-| **Scope safety** | Explicit target/assignment validation before discovery |
-| **Determinism** | Ordered discovery pipeline with reproducible artifact layout |
-| **Evidence integrity** | SHA-256 manifests, continuity records, and attestation files |
-| **Traceability** | Request ledger, evidence index, and scope register |
-| **Modularity** | Adapters → discovery modules → normalizer → evidence → reporting |
+| Scope safety | Explicit target and assignment handling before discovery |
+| Determinism | Ordered discovery pipeline with a reproducible artifact layout |
+| Evidence integrity | SHA-256 manifests, continuity records, and attestation files |
+| Traceability | Request ledger, evidence index, and scope register |
+| Modularity | Adapters → discovery → normalizer → evidence → reporting |
 
-The engine wraps familiar Kali tooling (`dig`, `curl`, `nmap`, `openssl`) behind typed Python adapters so operators get structured JSON/CSV/Markdown/PDF outputs instead of ad-hoc shell transcripts.
+The engine wraps familiar Kali tooling (`dig`, `curl`, `nmap`, `openssl`) behind Python adapters so operators receive structured JSON, CSV, Markdown, and PDF outputs instead of ad-hoc shell transcripts.
 
 ---
 
-## Feature Highlights
+## Features
 
 - Scope-aware reconnaissance against authorized targets
 - DNS discovery via `dig`
@@ -48,10 +51,10 @@ The engine wraps familiar Kali tooling (`dig`, `curl`, `nmap`, `openssl`) behind
 - Manifest integrity verification (`manifest.sha256`)
 
 <details>
-<summary><strong>Full capability matrix</strong></summary>
+<summary><strong>Capability matrix</strong></summary>
 
 | Area | Capabilities |
-|------|----------------|
+|------|--------------|
 | Discovery | DNS, probe, service, TLS, line protocol, vhost, auth, authenticated HTTP, fingerprint |
 | Normalization | Stable section schema across all discovery modules |
 | Evidence | `normalized.json`, scope register, request ledger, evidence index, assessment manifest, continuity record, integrity attestation, foothold evidence, SHA-256 manifest |
@@ -62,7 +65,7 @@ The engine wraps familiar Kali tooling (`dig`, `curl`, `nmap`, `openssl`) behind
 
 ---
 
-## Architecture Overview
+## Architecture
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
@@ -76,25 +79,22 @@ The engine wraps familiar Kali tooling (`dig`, `curl`, `nmap`, `openssl`) behind
         └───────┬───────┘ └───────┬────────┘ └────────┬───────┘
                 │                 │                   │
         ┌───────▼───────┐ ┌───────▼────────┐ ┌────────▼───────┐
-        │   Adapters    │ │ Artifact       │ │ PDF / Markdown │
-        │ dig curl nmap │ │ Writers        │ │  Generators    │
+        │   Adapters    │ │ Artifact       │ │ PDF generators │
+        │ dig curl nmap │ │ writers        │ │                │
         │ openssl …     │ │                │ │                │
         └───────────────┘ └────────────────┘ └────────────────┘
 ```
 
-<details>
-<summary><strong>Package layout (logical)</strong></summary>
-
 | Package | Responsibility |
 |---------|----------------|
-| `recon.configuration` | CLI parsing, config/assignment loading, scope & environment checks |
+| `recon.configuration` | CLI parsing, config/assignment loading, scope and environment checks |
 | `recon.adapters` | Thin wrappers around external recon tools |
-| `recon.discovery` | Ordered discovery modules + normalizer |
-| `recon.evidence` | Assessment artifact writers + integrity hashing |
-| `recon.reporting` | Report sections + PDF generation |
+| `recon.discovery` | Ordered discovery modules and normalizer |
+| `recon.evidence` | Assessment artifact writers and integrity hashing |
+| `recon.reporting` | Report sections and PDF generation |
 | `recon.engine` | Top-level workflow coordination |
 
-</details>
+Full write-up: [ARCHITECTURE.md](ARCHITECTURE.md) · [docs/architecture.md](docs/architecture.md)
 
 ---
 
@@ -126,16 +126,16 @@ DNS → Probe → Service → TLS → Line Protocol → Virtual Host
 ## Project Structure
 
 ```text
-recon-engine-portfolio/
+recon-engine/
 ├── .github/                 # Issue/PR templates, CI, Dependabot
-├── docs/                    # Architecture & engineering docs
-├── examples/                # Realistic usage examples
-├── screenshots/             # Portfolio screenshot placeholders
-├── deliverables/            # Assessment archive guidance
-├── output/                  # Runtime artifacts (gitignored contents)
+├── docs/                    # Architecture and engineering docs
+├── examples/                # Operator recipes
+├── screenshots/             # Portfolio screenshot captures
+├── deliverables/            # Optional assessment archive copies
+├── output/                  # Runtime artifacts (contents gitignored)
 ├── reports/                 # Optional report staging
 ├── resources/               # Templates, schemas, fixtures
-├── scripts/                 # Operator helper scripts
+├── scripts/                 # Operator helpers
 ├── src/recon/               # Application package
 │   ├── adapters/
 │   ├── configuration/
@@ -143,7 +143,10 @@ recon-engine-portfolio/
 │   ├── engine/
 │   ├── evidence/
 │   └── reporting/
-├── tests/                   # Unit / integration / acceptance
+├── tests/
+├── ARCHITECTURE.md
+├── PROJECT_OVERVIEW.md
+├── RELEASE_NOTES_v1.0.0.md
 ├── CONTRIBUTING.md
 ├── SECURITY.md
 ├── CHANGELOG.md
@@ -156,45 +159,52 @@ recon-engine-portfolio/
 
 ---
 
+## Requirements
+
+| Component | Notes |
+|-----------|-------|
+| Python | 3.13+ |
+| OS | Kali Linux recommended (system tooling assumed) |
+| `dig` | DNS discovery |
+| `curl` | HTTP probing and authenticated requests |
+| `nmap` | Service enumeration |
+| OpenSSL | TLS inspection |
+| PyYAML | Declared project dependency (config/assignment loading) |
+
+---
+
 ## Installation
 
 ```bash
-git clone https://github.com/mulingealex/recon-engine-portfolio.git
-cd recon-engine-portfolio
+git clone https://github.com/mulingealex/recon-engine.git
+cd recon-engine
 
 python -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
 
 pip install -e .
+# Optional developer tools:
+pip install -e ".[dev]"
 ```
 
-Editable install exposes the `recon` package under `src/`.
-
----
-
-## Requirements
-
-| Component | Notes |
-|-----------|--------|
-| Python | 3.13+ |
-| OS | Kali Linux recommended (tooling assumed) |
-| `dig` | DNS discovery |
-| `curl` | HTTP probing / authenticated requests |
-| `nmap` | Service enumeration |
-| OpenSSL | TLS inspection |
-| PyYAML | Assignment/config loading (install via environment as needed) |
+Editable install exposes the `recon` package from `src/`.
 
 ---
 
 ## Quick Start
 
 ```bash
-# Using a Stage 5 / lab assignment file
-PYTHONPATH=src python -m recon \
-  --assignment /path/to/assignment.json
+# Lab assignment file (authorized runtime)
+python -m recon --assignment /path/to/assignment.json
 
 # Direct target (authorized lab host only)
-PYTHONPATH=src python -m recon 127.0.0.1
+python -m recon 127.0.0.1
+```
+
+If the console script is not on `PATH`, use:
+
+```bash
+PYTHONPATH=src python -m recon --assignment /path/to/assignment.json
 ```
 
 Artifacts are written to `output/` by default (`--output` to override).
@@ -204,7 +214,7 @@ Artifacts are written to `output/` by default (`--output` to override).
 ## Usage
 
 ```bash
-PYTHONPATH=src python -m recon --help
+python -m recon --help
 ```
 
 | Argument | Description |
@@ -222,7 +232,7 @@ Configuration precedence: **CLI → YAML → assignment JSON**.
 ## Example Execution
 
 ```bash
-PYTHONPATH=src python -m recon \
+python -m recon \
   --assignment examples/sample_assignment.json \
   --output output
 ```
@@ -249,7 +259,7 @@ Assessment completed successfully.
 ========================================
 ```
 
-See [`examples/`](examples/) for additional operator recipes.
+Additional recipes: [`examples/`](examples/).
 
 ---
 
@@ -324,11 +334,17 @@ Every run produces a verifiable evidence pack:
 | `manifest.sha256` | SHA-256 hashes of artifacts |
 | `attack-surface-report.pdf` | Human-readable assessment report |
 
-Verify integrity after a run by inspecting `manifest.sha256` and comparing file hashes.
+Verify integrity after a run by inspecting `manifest.sha256` and comparing file hashes. See [`examples/verify_manifest.sh`](examples/verify_manifest.sh).
 
 ---
 
 ## Testing
+
+```bash
+pytest tests/unit -v
+```
+
+If needed without editable install:
 
 ```bash
 PYTHONPATH=src pytest tests/unit -v
@@ -337,7 +353,7 @@ PYTHONPATH=src pytest tests/unit -v
 JUnit XML (local only; gitignored):
 
 ```bash
-PYTHONPATH=src pytest tests/unit --junitxml=test-results.xml
+pytest tests/unit --junitxml=test-results.xml
 ```
 
 Compile check:
@@ -348,39 +364,40 @@ python -m compileall src
 
 ---
 
-## Technologies Used
+## Technologies
 
-- **Language:** Python 3.13
-- **Packaging:** setuptools / `pyproject.toml`
-- **Testing:** pytest
-- **Style:** Black, Ruff, mypy (configured)
-- **External tools:** dig, curl, nmap, OpenSSL
-- **Artifacts:** JSON, CSV, Markdown, PDF
-- **Platform:** Kali Linux
+| Layer | Choice |
+|-------|--------|
+| Language | Python 3.13 |
+| Packaging | setuptools / `pyproject.toml` |
+| Testing | pytest |
+| Style tooling | Black, Ruff, mypy (configured) |
+| External tools | dig, curl, nmap, OpenSSL |
+| Artifacts | JSON, CSV, Markdown, PDF |
+| Platform | Kali Linux |
 
 ---
 
 ## Design Decisions
 
-1. **Adapters over shell scripts** — Tool invocation is isolated so discovery logic stays testable and readable.
-2. **Orchestrators per subsystem** — Discovery, evidence, and reporting evolve independently without coupling.
-3. **Normalize once** — Downstream writers consume a single schema, not raw tool output.
+1. **Adapters over shell scripts** — Tool invocation stays isolated and readable.
+2. **Orchestrators per subsystem** — Discovery, evidence, and reporting evolve independently.
+3. **Normalize once** — Downstream writers consume one schema, not raw tool output.
 4. **Hash last** — `ManifestWriter` runs after other artifacts so integrity covers the full pack.
 5. **Assignment-first lab mode** — Supports educational runtimes while remaining usable with a direct target.
 
-More detail: [`docs/engineering-decisions.md`](docs/engineering-decisions.md).
+Details: [`docs/engineering-decisions.md`](docs/engineering-decisions.md).
 
 ---
 
-## Future Roadmap
+## Roadmap
 
-See [`ROADMAP.md`](ROADMAP.md) for the full plan. Highlights:
+See [`ROADMAP.md`](ROADMAP.md). Near-term highlights:
 
-- Richer TLS and certificate analytics
-- Optional plugin interface for custom discovery modules
-- Expanded integration / acceptance tests
-- Containerized demo lab profile
-- HTML report companion to PDF
+- Real portfolio screenshots from authorized demo runs
+- Broader adapter unit coverage with mocked subprocess boundaries
+- Integration tests against a disposable lab profile
+- Optional HTML report companion to PDF
 
 ---
 
@@ -397,17 +414,27 @@ See [`ROADMAP.md`](ROADMAP.md) for the full plan. Highlights:
 
 ## Screenshots
 
-> Place real captures in `screenshots/` after a local authorized run. References below are intentional placeholders.
+Portfolio captures belong in [`screenshots/`](screenshots/). **PNG files are not committed until captured from an authorized local run**—see [`screenshots/README.md`](screenshots/README.md) for exact filenames and where each image belongs in this README.
 
-| Capture | Path | Description |
-|---------|------|-------------|
-| CLI run | [`screenshots/cli-execution.png`](screenshots/cli-execution.png) | Engine completing discovery → evidence → report |
-| Evidence tree | [`screenshots/evidence-artifacts.png`](screenshots/evidence-artifacts.png) | `output/` artifact layout |
-| Normalized JSON | [`screenshots/normalized-json.png`](screenshots/normalized-json.png) | Structured discovery output |
-| PDF report | [`screenshots/attack-surface-report.png`](screenshots/attack-surface-report.png) | Generated assessment PDF |
-| Integrity | [`screenshots/manifest-sha256.png`](screenshots/manifest-sha256.png) | `manifest.sha256` verification view |
+| Planned file | README placement | Description |
+|--------------|------------------|-------------|
+| `cli-execution.png` | Below this section | CLI completing discovery → evidence → report |
+| `evidence-artifacts.png` | Below this section | `output/` artifact layout |
+| `normalized-json.png` | Near Example Output | Structured `normalized.json` |
+| `attack-surface-report.png` | Near Evidence Generation | Assessment PDF first page |
+| `manifest-sha256.png` | Near Evidence Generation | Integrity manifest / verify view |
 
-See [`screenshots/README.md`](screenshots/README.md).
+After captures exist, embed them under **Screenshots** using root-relative paths, for example:
+
+```text
+screenshots/cli-execution.png
+screenshots/evidence-artifacts.png
+screenshots/normalized-json.png
+screenshots/attack-surface-report.png
+screenshots/manifest-sha256.png
+```
+
+Use standard Markdown image embeds once the PNG files are committed (see [`screenshots/README.md`](screenshots/README.md) for the exact snippet).
 
 ---
 
@@ -419,7 +446,7 @@ Contributions that improve documentation, tests, DX, and non-breaking quality ar
 2. Open an issue using the templates in [`.github/ISSUE_TEMPLATE/`](.github/ISSUE_TEMPLATE/)
 3. Submit a PR using [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md)
 
-Security issues: follow [`SECURITY.md`](SECURITY.md)—do not open public issues for vulnerabilities.
+Security issues: follow [`SECURITY.md`](SECURITY.md)—do not open public GitHub issues for vulnerabilities.
 
 ---
 
@@ -427,7 +454,7 @@ Security issues: follow [`SECURITY.md`](SECURITY.md)—do not open public issues
 
 Released under the [MIT License](LICENSE).
 
-Originally developed for educational assessment under the **UBI Advanced Programme – Ethical Hacking / VAPT (Stage 5)**, and maintained as a public portfolio / open-source project.
+Originally developed for educational assessment under the **UBI Advanced Programme – Ethical Hacking / VAPT (Stage 5)**, and maintained as a public open-source portfolio project.
 
 ---
 
@@ -438,6 +465,7 @@ Cybersecurity Analyst · Vulnerability Assessment · Linux Security
 Nairobi, Kenya
 
 - **GitHub:** [github.com/mulingealex](https://github.com/mulingealex)
+- **Repository:** [github.com/mulingealex/recon-engine](https://github.com/mulingealex/recon-engine)
 - **LinkedIn:** [linkedin.com/in/alex-mulinge-448708361](https://www.linkedin.com/in/alex-mulinge-448708361)
 - **Email:** mulingealex68@gmail.com
 
@@ -452,7 +480,8 @@ Nairobi, Kenya
 | Evidence generation | Complete |
 | Report generation | Complete |
 | Unit tests | Passing |
-| Portfolio / OSS packaging | In progress (this branch) |
+| Open-source packaging | Complete (v1.0.0) |
+| Portfolio screenshots | Pending authorized captures |
 
 ---
 

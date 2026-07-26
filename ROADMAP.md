@@ -1,8 +1,10 @@
 # Roadmap
 
+Tracked against [github.com/mulingealex/recon-engine](https://github.com/mulingealex/recon-engine).
+
 ## Near Term
 
-- [ ] Capture real portfolio screenshots after authorized demo runs
+- [ ] Capture real portfolio screenshots after authorized demo runs ([screenshots/README.md](screenshots/README.md))
 - [ ] Expand unit coverage for adapters with mocked subprocess boundaries
 - [ ] Add integration tests against a disposable local lab profile
 - [ ] Publish a short “how reviewers verify evidence” checklist
@@ -25,6 +27,6 @@
 
 - Exploitation / post-exploitation frameworks
 - Unauthorized scanning features
-- Breaking changes to assessed artifact filenames without major version bump
+- Breaking changes to assessed artifact filenames without a major version bump
 
 Suggestions welcome via issues—see [CONTRIBUTING.md](CONTRIBUTING.md).

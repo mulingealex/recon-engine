@@ -1,5 +1,7 @@
 # Architecture
 
+> Recruiter-facing summary: [ARCHITECTURE.md](../ARCHITECTURE.md) (repository root).
+
 ## Purpose
 
 Recon Engine is a modular reconnaissance platform that executes an ordered discovery pipeline against authorized targets, normalizes results, generates integrity-preserving evidence, and produces an assessment report.

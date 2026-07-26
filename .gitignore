@@ -2,6 +2,7 @@
 .venv/
 venv/
 env/
+.env/
 
 # Python bytecode / caches
 __pycache__/
@@ -17,19 +18,25 @@ htmlcov/
 .tox/
 .nox/
 .cache/
+.pytype/
+.dmypy.json
+dmypy.json
 
 # Packaging / build
 build/
 dist/
+wheels/
 *.egg-info/
-src/*.egg-info/
+.eggs/
 *.egg
 pip-wheel-metadata/
+MANIFEST
 
 # Test / CI artifacts
 test-results.xml
 .junit/
 coverage.xml
+.hypothesis/
 
 # Runtime engine output (keep directory via .gitkeep)
 output/*
@@ -41,10 +48,14 @@ output/*
 *.swp
 *.swo
 *~
+.project
+.pydevproject
+.settings/
 
 # Operating system
 .DS_Store
 Thumbs.db
+Desktop.ini
 
 # Local env / secrets
 .env
@@ -52,8 +63,12 @@ Thumbs.db
 !.env.example
 *.pem
 *.key
+*.p12
+credentials.json
+secrets.json
 
-# Optional local notebooks / scratch
+# Optional local scratch
 *.log
 tmp/
 temp/
+scratch/

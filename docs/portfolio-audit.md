@@ -1,5 +1,8 @@
 # Portfolio Audit Report
 
+> Superseded for final polish scoring by [final-audit-report.md](final-audit-report.md).
+> Retained for historical context from the initial portfolio hardening pass.
+
 **Date:** 2026-07-26  
 **Reviewer persona:** Senior Security Hiring Manager + Open Source Maintainer  
 **Scope:** Presentation, documentation, DX, and repository quality only  

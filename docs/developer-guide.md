@@ -9,12 +9,11 @@
 ## Setup
 
 ```bash
-git clone https://github.com/mulingealex/recon-engine-portfolio.git
-cd recon-engine-portfolio
+git clone https://github.com/mulingealex/recon-engine.git
+cd recon-engine
 python -m venv .venv
 source .venv/bin/activate
-pip install -e .
-pip install pytest pyyaml   # if not already present in your environment
+pip install -e ".[dev]"
 ```
 
 ## Running Locally
