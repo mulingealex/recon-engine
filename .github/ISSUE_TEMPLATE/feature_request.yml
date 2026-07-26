@@ -1,0 +1,31 @@
+name: Feature request
+description: Suggest an enhancement that preserves assessment compatibility
+title: "[feature] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / opportunity
+      description: What problem does this solve for operators or reviewers?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+  - type: dropdown
+    id: behavior_impact
+    attributes:
+      label: Would this change discovery, evidence, or report behavior?
+      options:
+        - "No — docs/DX/tests only"
+        - "Yes — requires compatibility review"
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered

@@ -5,6 +5,10 @@ Coordinates generation of the attack surface
 assessment report.
 """
 
+from __future__ import annotations
+
+from typing import Any
+
 from recon.reporting.executive_summary_writer import (
     ExecutiveSummaryWriter,
 )
@@ -27,7 +31,7 @@ class ReportingOrchestrator:
     Coordinates report generation.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Initialize reporting components.
         """
@@ -54,8 +58,8 @@ class ReportingOrchestrator:
 
     def execute(
         self,
-        normalized_data: dict,
-    ) -> dict:
+        normalized_data: dict[str, Any],
+    ) -> dict[str, Any]:
         """
         Execute the reporting workflow.
 

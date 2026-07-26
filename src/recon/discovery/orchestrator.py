@@ -5,7 +5,10 @@ Coordinates execution of all discovery modules and returns
 normalized discovery results.
 """
 
+from __future__ import annotations
+
 from argparse import Namespace
+from typing import Any
 
 from recon.discovery.authentication_discovery import (
     AuthenticationDiscovery,
@@ -25,6 +28,7 @@ from recon.discovery.tls_discovery import TLSDiscovery
 from recon.discovery.virtual_host_discovery import (
     VirtualHostDiscovery,
 )
+from recon.evidence import RawOutputWriter
 
 
 class DiscoveryOrchestrator:
@@ -32,7 +36,7 @@ class DiscoveryOrchestrator:
     Coordinates execution of all discovery modules.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the discovery orchestrator."""
 
         self._dns = DNSDiscovery()
@@ -45,11 +49,12 @@ class DiscoveryOrchestrator:
         self._authenticated_http = AuthenticatedHTTPDiscovery()
         self._fingerprint = FingerprintDiscovery()
         self._normalizer = Normalizer()
+        self._raw_output = RawOutputWriter()
 
     def execute(
         self,
         arguments: Namespace,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """
         Execute all discovery modules.
 
@@ -71,6 +76,10 @@ class DiscoveryOrchestrator:
         dns_results = self._dns.execute(
             arguments
         )
+        self._raw_output.write(
+            "dns",
+            dns_results,
+        )
 
         #
         # Probe Discovery
@@ -78,6 +87,10 @@ class DiscoveryOrchestrator:
 
         probe_results = self._probe.execute(
             arguments
+        )
+        self._raw_output.write(
+            "probe",
+            probe_results,
         )
 
         #
@@ -87,6 +100,10 @@ class DiscoveryOrchestrator:
         service_results = self._service.execute(
             arguments
         )
+        self._raw_output.write(
+            "service",
+            service_results,
+        )
 
         #
         # TLS Discovery
@@ -94,6 +111,10 @@ class DiscoveryOrchestrator:
 
         tls_results = self._tls.execute(
             arguments
+        )
+        self._raw_output.write(
+            "tls",
+            tls_results,
         )
 
         #
@@ -105,6 +126,10 @@ class DiscoveryOrchestrator:
                 arguments
             )
         )
+        self._raw_output.write(
+            "line_protocol",
+            line_protocol_results,
+        )
 
         #
         # Virtual Host Discovery
@@ -115,6 +140,10 @@ class DiscoveryOrchestrator:
                 arguments,
                 line_protocol_results,
             )
+        )
+        self._raw_output.write(
+            "virtual_host",
+            virtual_host_results,
         )
 
         #
@@ -128,6 +157,10 @@ class DiscoveryOrchestrator:
                 line_protocol_results,
             )
         )
+        self._raw_output.write(
+            "authentication",
+            authentication_results,
+        )
 
         #
         # Authenticated HTTP Discovery
@@ -139,17 +172,25 @@ class DiscoveryOrchestrator:
                 authentication_results,
             )
         )
+        self._raw_output.write(
+            "authenticated_http",
+            authenticated_http_results,
+        )
 
         #
         # Fingerprinting
         #
 
         fingerprint_results = (
-    self._fingerprint.execute(
-        arguments,
-        virtual_host_results,
-    )
-)
+            self._fingerprint.execute(
+                arguments,
+                virtual_host_results,
+            )
+        )
+        self._raw_output.write(
+            "fingerprint",
+            fingerprint_results,
+        )
 
         #
         # Aggregate results.

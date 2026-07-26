@@ -1,21 +1,25 @@
 """
 Discovery Normalizer.
 
-Normalizes discovery results into a consistent schema.
+Normalizes discovery results into a consistent schema consumed by
+evidence and reporting subsystems.
 """
+
+from __future__ import annotations
+
+from typing import Any
 
 
 class Normalizer:
-    """Normalizes discovery results."""
+    """Normalizes discovery results into a stable section map."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the normalizer."""
-        pass
 
     def execute(
         self,
-        results: dict,
-    ) -> dict:
+        results: dict[str, Any],
+    ) -> dict[str, Any]:
         """
         Normalize discovery results.
 
@@ -27,7 +31,7 @@ class Normalizer:
         Returns
         -------
         dict
-            Normalized discovery results.
+            Normalized discovery results with required section keys.
         """
 
         normalized_results = {

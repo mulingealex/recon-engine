@@ -1,0 +1,36 @@
+name: Bug report
+description: Report incorrect behavior or broken documentation
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve Recon Engine. **Do not** report security vulnerabilities here — see SECURITY.md.
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What went wrong?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Include commands and environment details (OS, Python version, tools).
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: checkboxes
+    id: authorization
+    attributes:
+      label: Authorization confirmation
+      options:
+        - label: Any targets involved were systems I own or am authorized to test.
+          required: true

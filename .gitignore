@@ -1,27 +1,59 @@
-# Virtual Environment
+# Virtual environments
 .venv/
+venv/
+env/
 
-# Python
+# Python bytecode / caches
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
 *.pyo
-
-# Test caches
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
-
-# Coverage
 .coverage
+.coverage.*
 htmlcov/
+.tox/
+.nox/
+.cache/
 
-# Generated output
-output/
+# Packaging / build
+build/
+dist/
+*.egg-info/
+src/*.egg-info/
+*.egg
+pip-wheel-metadata/
 
-# IDE
+# Test / CI artifacts
+test-results.xml
+.junit/
+coverage.xml
+
+# Runtime engine output (keep directory via .gitkeep)
+output/*
+!output/.gitkeep
+
+# IDE / editors
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
 
-# Operating System
+# Operating system
 .DS_Store
 Thumbs.db
+
+# Local env / secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Optional local notebooks / scratch
+*.log
+tmp/
+temp/

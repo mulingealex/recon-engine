@@ -1,25 +1,22 @@
 """
 Manifest Writer.
 
-Generates SHA-256 hashes for assessment artifacts.
+Generates SHA-256 hashes for all assessment artifacts.
 """
 
-from pathlib import Path
+from __future__ import annotations
+
 from hashlib import sha256
+from pathlib import Path
 
 
 class ManifestWriter:
     """
-    Writes the assessment manifest containing SHA-256 hashes.
+    Generates manifest.sha256.
     """
 
-    def __init__(self):
-        """
-        Initialize the manifest writer.
-        """
-
+    def __init__(self) -> None:
         self._output_directory = Path("output")
-
         self._output_directory.mkdir(
             parents=True,
             exist_ok=True,
@@ -29,31 +26,12 @@ class ManifestWriter:
         self,
         file_path: Path,
     ) -> str:
-        """
-        Calculate the SHA-256 hash of a file.
-
-        Parameters
-        ----------
-        file_path : Path
-            File to hash.
-
-        Returns
-        -------
-        str
-            SHA-256 hash.
-        """
 
         digest = sha256()
 
         with file_path.open("rb") as file:
 
-            while True:
-
-                chunk = file.read(8192)
-
-                if not chunk:
-                    break
-
+            while chunk := file.read(8192):
                 digest.update(chunk)
 
         return digest.hexdigest()
@@ -62,66 +40,37 @@ class ManifestWriter:
         self,
         normalized_data: dict,
     ) -> dict:
-        """
-        Generate the SHA-256 manifest.
-
-        Parameters
-        ----------
-        normalized_data : dict
-            Included for interface consistency.
-
-        Returns
-        -------
-        dict
-            Metadata describing the generated artifact.
-        """
 
         manifest_file = (
-            self._output_directory /
-            "manifest.sha256"
+            self._output_directory
+            / "manifest.sha256"
         )
 
-        artifact_files = [
-
-            "normalized.json",
-
-            "scope-register.csv",
-
-            "request-ledger.csv",
-
-            "evidence-index.csv",
-
-            "assessment-manifest.json",
-
-            "continuity-record.md",
-
-            "integrity-attestation.md",
-
-            "foothold-evidence.txt",
-
-        ]
+        artifacts = sorted(
+    p
+    for p in self._output_directory.rglob("*")
+    if p.is_file()
+    and p.name not in {
+        ".gitkeep",
+        "manifest.sha256",
+    }
+)
 
         with manifest_file.open(
-            mode="w",
+            "w",
             encoding="utf-8",
         ) as manifest:
 
-            for artifact in artifact_files:
+            for artifact in artifacts:
 
-                artifact_path = (
-                    self._output_directory /
-                    artifact
+                relative = artifact.relative_to(
+                    self._output_directory
                 )
 
-                if artifact_path.exists():
-
-                    file_hash = self._calculate_hash(
-                        artifact_path
-                    )
-
-                    manifest.write(
-                        f"{file_hash}  {artifact}\n"
-                    )
+                manifest.write(
+                    f"{self._calculate_hash(artifact)}  "
+                    f"{relative.as_posix()}\n"
+                )
 
         return {
             "success": True,
@@ -131,15 +80,8 @@ class ManifestWriter:
 
 
 def main() -> None:
-    """
-    Run the manifest writer.
-    """
-
     writer = ManifestWriter()
-
-    results = writer.write({})
-
-    print(results)
+    print(writer.write({}))
 
 
 if __name__ == "__main__":

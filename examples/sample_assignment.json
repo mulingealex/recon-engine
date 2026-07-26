@@ -1,0 +1,10 @@
+{
+  "runtime_id": "demo-runtime-local",
+  "profile": "P5-demo",
+  "marker": "PORTFOLIO-DEMO",
+  "entry_url": "http://127.0.0.1:18408/",
+  "authorized_ports": [18408],
+  "request_budget": 100,
+  "maximum_rate_per_second": 5,
+  "notes": "Illustrative sample for documentation only. Replace with your authorized lab assignment.json."
+}

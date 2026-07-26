@@ -1,13 +1,20 @@
 """
 Recon Engine.
 
-Coordinates the complete reconnaissance workflow.
+Coordinates the complete reconnaissance workflow:
+
+1. Discovery (and normalization)
+2. Evidence generation
+3. Assessment reporting
 """
+
+from __future__ import annotations
 
 from argparse import (
     ArgumentParser,
     Namespace,
 )
+from typing import Any
 
 from recon.configuration import (
     ConfigLoader,
@@ -31,7 +38,7 @@ class ReconEngine:
     Coordinates the complete reconnaissance workflow.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Initialize the reconnaissance engine.
         """
@@ -51,9 +58,19 @@ class ReconEngine:
     def execute(
         self,
         arguments: Namespace,
-    ) -> dict:
+    ) -> dict[str, Any]:
         """
         Execute the complete reconnaissance workflow.
+
+        Parameters
+        ----------
+        arguments:
+            Parsed and configuration-enriched CLI namespace.
+
+        Returns
+        -------
+        dict[str, Any]
+            Success flag, target, and artifact path map.
         """
 
         print("\n========================================")
@@ -145,12 +162,6 @@ def main() -> None:
     arguments = loader.load(
         arguments
     )
-
-    #
-    # DEBUG
-    #
-
-    print(arguments)
 
     #
     # Execute engine.

@@ -1,5 +1,8 @@
 """
 Evidence package.
+
+Writers that materialize assessment artifacts (JSON, CSV, Markdown,
+text, and SHA-256 manifests) from normalized discovery results.
 """
 
 from .orchestrator import EvidenceOrchestrator
@@ -14,6 +17,7 @@ from .assessment_manifest_writer import (
 from .continuity_writer import ContinuityWriter
 from .integrity_writer import IntegrityWriter
 from .manifest_writer import ManifestWriter
+from .raw_output_writer import RawOutputWriter
 
 __all__ = [
     "EvidenceOrchestrator",
@@ -25,4 +29,5 @@ __all__ = [
     "ContinuityWriter",
     "IntegrityWriter",
     "ManifestWriter",
+    "RawOutputWriter",
 ]

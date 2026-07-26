@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security report
+    url: https://github.com/mulingealex/recon-engine-portfolio/blob/master/SECURITY.md
+    about: Report vulnerabilities privately — do not open a public issue.
+  - name: Author LinkedIn
+    url: https://www.linkedin.com/in/alex-mulinge-448708361
+    about: Professional profile for recruiter / networking context.

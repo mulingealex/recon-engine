@@ -1,5 +1,7 @@
 """
 Reporting package.
+
+Attack-surface assessment sections and PDF generation.
 """
 
 from .orchestrator import ReportingOrchestrator

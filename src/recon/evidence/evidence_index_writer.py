@@ -1,12 +1,14 @@
 """
 Evidence Index Writer.
 
-Writes the evidence index.
+Automatically indexes every generated assessment artifact.
 """
 
-from pathlib import Path
+from __future__ import annotations
+
 import csv
-from datetime import datetime
+from datetime import UTC, datetime
+from pathlib import Path
 
 
 class EvidenceIndexWriter:
@@ -14,66 +16,65 @@ class EvidenceIndexWriter:
     Writes the evidence index.
     """
 
-    def __init__(self):
-        """
-        Initialize the evidence index writer.
-        """
-
+    def __init__(self) -> None:
         self._output_directory = Path("output")
-
         self._output_directory.mkdir(
             parents=True,
             exist_ok=True,
         )
 
-    def write(self, normalized_data: dict) -> dict:
+    def _artifact_type(
+        self,
+        path: Path,
+    ) -> str:
         """
-        Write the evidence index.
-
-        Parameters
-        ----------
-        normalized_data : dict
-            Normalized reconnaissance data.
-
-        Returns
-        -------
-        dict
-            Metadata describing the generated artifact.
+        Determine an artifact type from its filename.
         """
 
-        output_file = self._output_directory / "evidence-index.csv"
+        mapping = {
+            "normalized.json": "Normalized Data",
+            "scope-register.csv": "Scope Register",
+            "request-ledger.csv": "Request Ledger",
+            "assessment-manifest.json": "Assessment Manifest",
+            "continuity-record.md": "Continuity Record",
+            "integrity-attestation.md": "Integrity Attestation",
+            "evidence-index.csv": "Evidence Index",
+            "foothold-evidence.txt": "Foothold Evidence",
+            "attack-surface-report.pdf": "Assessment Report",
+            "manifest.sha256": "SHA-256 Manifest",
+            "test-results.xml": "Unit Test Results",
+        }
 
-        timestamp = (
-            datetime.utcnow()
-            .isoformat(timespec="seconds") + "Z"
+        if "raw-output" in path.parts:
+            return "Raw Discovery Output"
+
+        return mapping.get(path.name, "Generated Artifact")
+
+    def write(
+        self,
+        normalized_data: dict,
+    ) -> dict:
+
+        output_file = (
+            self._output_directory
+            / "evidence-index.csv"
         )
 
-        rows = [
-            {
-                "evidence_id": "EV-001",
-                "artifact": "normalized.json",
-                "type": "Normalized Data",
-                "location": "output/normalized.json",
-                "generated": timestamp,
-            },
-            {
-                "evidence_id": "EV-002",
-                "artifact": "scope-register.csv",
-                "type": "Scope Register",
-                "location": "output/scope-register.csv",
-                "generated": timestamp,
-            },
-            {
-                "evidence_id": "EV-003",
-                "artifact": "request-ledger.csv",
-                "type": "Request Ledger",
-                "location": "output/request-ledger.csv",
-                "generated": timestamp,
-            },
-        ]
+        timestamp = datetime.now(
+            UTC
+        ).isoformat(
+            timespec="seconds"
+        ).replace("+00:00", "Z")
+
+        artifacts = sorted(
+    p
+    for p in self._output_directory.rglob("*")
+    if p.is_file()
+    and p.name != ".gitkeep"
+)
 
         with output_file.open(
-            mode="w",
+            "w",
             newline="",
             encoding="utf-8",
         ) as file:
@@ -91,7 +92,30 @@ class EvidenceIndexWriter:
 
             writer.writeheader()
 
-            writer.writerows(rows)
+            evidence_number = 1
+
+            for artifact in artifacts:
+
+                relative = artifact.relative_to(
+                    self._output_directory
+                )
+
+                writer.writerow(
+                    {
+                        "evidence_id":
+                            f"EV-{evidence_number:03d}",
+                        "artifact":
+                            relative.name,
+                        "type":
+                            self._artifact_type(relative),
+                        "location":
+                            f"output/{relative.as_posix()}",
+                        "generated":
+                            timestamp,
+                    }
+                )
+
+                evidence_number += 1
 
         return {
             "success": True,
@@ -101,17 +125,8 @@ class EvidenceIndexWriter:
 
 
 def main() -> None:
-    """
-    Run the evidence index writer.
-    """
-
     writer = EvidenceIndexWriter()
-
-    sample = {}
-
-    results = writer.write(sample)
-
-    print(results)
+    print(writer.write({}))
 
 
 if __name__ == "__main__":

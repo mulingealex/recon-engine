@@ -1,6 +1,12 @@
 """
 Recon package entry point.
+
+Invoke as::
+
+    python -m recon [--assignment FILE] [target]
 """
+
+from __future__ import annotations
 
 from argparse import ArgumentParser
 
@@ -10,7 +16,7 @@ from recon.engine import ReconEngine
 
 def main() -> None:
     """
-    Execute the reconnaissance engine.
+    Parse arguments, load configuration, and execute the engine.
     """
 
     parser = ArgumentParser(

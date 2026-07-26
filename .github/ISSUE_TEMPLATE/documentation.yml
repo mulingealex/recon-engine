@@ -1,0 +1,18 @@
+name: Documentation improvement
+description: Fix or expand documentation
+title: "[docs] "
+labels: ["documentation"]
+body:
+  - type: textarea
+    id: location
+    attributes:
+      label: Document / section
+      description: Path or README section that needs work
+    validations:
+      required: true
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested improvement
+    validations:
+      required: true

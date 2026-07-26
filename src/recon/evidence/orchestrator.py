@@ -4,6 +4,10 @@ Evidence Orchestrator.
 Coordinates generation of all assessment evidence artifacts.
 """
 
+from __future__ import annotations
+
+from typing import Any
+
 from recon.evidence.normalized_writer import NormalizedWriter
 from recon.evidence.scope_register_writer import ScopeRegisterWriter
 from recon.evidence.request_ledger_writer import RequestLedgerWriter
@@ -24,7 +28,7 @@ class EvidenceOrchestrator:
     Coordinates the generation of evidence artifacts.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
         Initialize all evidence writers.
         """
@@ -70,8 +74,8 @@ class EvidenceOrchestrator:
 
     def execute(
         self,
-        normalized_data: dict,
-    ) -> dict:
+        normalized_data: dict[str, Any],
+    ) -> dict[str, Any]:
         """
         Generate every evidence artifact.
 

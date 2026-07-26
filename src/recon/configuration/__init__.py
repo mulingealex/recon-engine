@@ -1,5 +1,8 @@
 """
 Configuration package.
+
+CLI parsing, configuration/assignment loading, scope validation,
+environment checks, and output path helpers.
 """
 
 from .cli_parser import CLIParser
